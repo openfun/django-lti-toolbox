@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Demo LTI Consumer</title>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+</head>
+
+<body style="margin:0px;padding:0px;overflow:hidden">
+
+<div class="container-fluid">
+
+    <div class="row">
+
+        <div class="col bg-light">
+            <div>
+                {% load crispy_forms_tags %}
+
+                <form action="{{ request.build_absolute_uri }}" method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Send LTI Launch request</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-9">
+
+                {% if lti_params %}
+        {% autoescape off %}
+            <form id="lti_form" action="{{ launch_url }}" method="post" target="lti_iframe">
+                {% for name,value in lti_params.items %}
+                    <input type="hidden" name="{{ name }}" value="{{ value }}"/>
+                {% endfor %}
+            </form>
+        {% endautoescape %}
+
+        <iframe
+                class="controlled-iframe"
+                name="lti_iframe"
+                style="overflow:hidden;height:100vh;width:100%"
+                srcdoc="<body>Loading...</body>"
+                frameborder="0"
+                allowfullscreen
+                allow="fullscreen *"
+                webkitallowfullscreen
+                mozallowfullscreen
+        >
+        </iframe>
+
+        <script>
+            var form = document.querySelector("#lti_form");
+            form.submit();
+        </script>
+    {% endif %}
+
+
+        </div>
+
+    </div>
+
+
+
+</div>
+
+</body>
+
+</html>

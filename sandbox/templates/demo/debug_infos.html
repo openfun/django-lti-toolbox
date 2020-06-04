@@ -1,0 +1,80 @@
+<html>
+<head>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+</head>
+
+<body>
+
+<div class="container pb-5">
+
+    <div class="alert alert-{{ message_class|default:"success" }} mt-4">
+        {{ message }}
+    </div>
+
+
+    <h3 class="mb-4">Debug informations</h3>
+
+    <section class="mb-3">
+        <h5>Launch request URL : {{ request.path }}</h5>
+    </section>
+
+    {% if debug_infos %}
+        {% for section_title, section_items in debug_infos.items %}
+            {% if section_items %}
+                <section class="mb-3">
+                    <h5>{{ section_title }}</h5>
+
+                    <table class="table">
+                        <tbody>
+                        {% for param_name, param_value in section_items.items %}
+                            <tr>
+                                <td>{{ param_name }}</td>
+                                <td>{{ param_value }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </section>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    {% if request.POST %}
+        <section class="mb-3">
+            <h5>POST data</h5>
+
+            <table class="table">
+                <tbody>
+                {% for param_name, param_value in request.POST.items %}
+                    <tr>
+                        <td scope="row">{{ param_name }}</td>
+                        <td>{{ param_value }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    {% endif %}
+
+    <hr />
+
+    <div class="alert alert-dark md-3">
+        <h4>Try me !</h4>
+        <p>You want to test a replay attack ? Try to re-execute the same LTI request.</p>
+        <div class="btn btn-dark" onclick="location.reload()">
+            <svg class="bi bi-arrow-repeat" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M2.854 7.146a.5.5 0 0 0-.708 0l-2 2a.5.5 0 1 0 .708.708L2.5 8.207l1.646 1.647a.5.5 0 0 0 .708-.708l-2-2zm13-1a.5.5 0 0 0-.708 0L13.5 7.793l-1.646-1.647a.5.5 0 0 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0 0-.708z"/>
+  <path fill-rule="evenodd" d="M8 3a4.995 4.995 0 0 0-4.192 2.273.5.5 0 0 1-.837-.546A6 6 0 0 1 14 8a.5.5 0 0 1-1.001 0 5 5 0 0 0-5-5zM2.5 7.5A.5.5 0 0 1 3 8a5 5 0 0 0 9.192 2.727.5.5 0 1 1 .837.546A6 6 0 0 1 2 8a.5.5 0 0 1 .501-.5z"/>
+</svg>
+            Reload
+        </div>
+    </div>
+
+
+
+</div>
+
+</body>
+
+</html>

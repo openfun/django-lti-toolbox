@@ -1,0 +1,276 @@
+# Configuration file anchors
+generate-version-file: &generate-version-file
+  run:
+    name: Create a version.json
+    command: |
+      # Create a version.json à-la-mozilla
+      # https://github.com/mozilla-services/Dockerflow/blob/master/docs/version_object.md
+      printf '{"commit":"%s","version":"%s","source":"https://github.com/%s/%s","build":"%s"}\n' \
+        "$CIRCLE_SHA1" \
+        "$CIRCLE_TAG" \
+        "$CIRCLE_PROJECT_USERNAME" \
+        "$CIRCLE_PROJECT_REPONAME" \
+        "$CIRCLE_BUILD_URL" > sandbox/version.json
+
+version: 2
+jobs:
+  # Git jobs
+  # Check that the git history is clean and complies with our expectations
+  lint-git:
+    docker:
+      - image: circleci/python:3.8-buster
+    working_directory: ~/fun
+    steps:
+      - checkout
+      # Make sure the changes don't add a "print" statement to the code base.
+      # We should exclude the ".circleci" folder from the search as the very command that checks
+      # the absence of "print" is including a "print(" itself.
+      - run:
+          name: enforce absence of print statements in code
+          command: |
+            ! git diff origin/master..HEAD -- . ':(exclude).circleci' | grep "print("
+      - run:
+          name: Check absence of fixup commits
+          command: |
+            ! git log | grep 'fixup!'
+      - run:
+          name: Install gitlint
+          command: |
+            pip install --user gitlint
+      - run:
+          name: lint commit messages added to master
+          command: |
+            ~/.local/bin/gitlint --commits origin/master..HEAD
+
+  # Check that the CHANGELOG has been updated in the current branch
+  check-changelog:
+    docker:
+      - image: circleci/buildpack-deps:stretch-scm
+    working_directory: ~/fun
+    steps:
+      - checkout
+      - run:
+          name: Check that the CHANGELOG has been modified in the current branch
+          command: |
+            git whatchanged --name-only --pretty="" origin..HEAD | grep CHANGELOG
+
+  # Check that the CHANGELOG max line length does not exceed 80 characters
+  lint-changelog:
+    docker:
+      - image: debian:stretch
+    working_directory: ~/fun
+    steps:
+      - checkout
+      - run:
+          name: Check CHANGELOG max line length
+          command: |
+            # Get the longuest line width (ignoring release links)
+            test $(cat CHANGELOG.md | grep -Ev "^\[.*\]: https://github.com/openfun" | wc -L) -le 80
+
+  # ---- Backend jobs ----
+  # Build backend development environment
+  build:
+    docker:
+      - image: circleci/python:3.8-buster
+    working_directory: ~/fun
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-back-dependencies-{{ .Revision }}
+      - run:
+          name: Install development dependencies
+          command: pip install --user .[dev,sandbox]
+      - save_cache:
+          paths:
+            - ~/.local
+          key: v1-back-dependencies-{{ .Revision }}
+
+  lint:
+    docker:
+      - image: circleci/python:3.8-buster
+        environment:
+          PYTHONPATH: /home/circleci/fun/sandbox
+    working_directory: ~/fun
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-back-dependencies-{{ .Revision }}
+      - run:
+          name: Lint code with flake8
+          command: ~/.local/bin/flake8
+      - run:
+          name: Lint code with isort
+          command: ~/.local/bin/isort --recursive --check-only .
+      - run:
+          name: Lint code with black
+          command: ~/.local/bin/black src sandbox tests --check
+      - run:
+          name: Lint code with pylint
+          command: ~/.local/bin/pylint src sandbox tests
+      - run:
+          name: Lint code with bandit
+          command: ~/.local/bin/bandit -qr src/lti_toolbox sandbox
+      - run:
+          name: Type-check code with mypy
+          command: ~/.local/bin/mypy src
+
+  test:
+    docker:
+      - image: circleci/python:3.8-buster
+        environment:
+          DJANGO_SETTINGS_MODULE: settings
+          DJANGO_CONFIGURATION: Test
+          DJANGO_SECRET_KEY: ThisIsAnExampleKeyForTestPurposeOnly
+          PYTHONPATH: /home/circleci/fun/sandbox
+          DB_HOST: localhost
+          DB_NAME: lti_toolbox
+          DB_USER: fun
+          DB_PASSWORD: pass
+          DB_PORT: 5432
+      # services
+      - image: circleci/postgres:12-ram
+        environment:
+          POSTGRES_DB: lti_toolbox
+          POSTGRES_USER: fun
+          POSTGRES_PASSWORD: pass
+    working_directory: ~/fun
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-back-dependencies-{{ .Revision }}
+      # While running tests, we need to make the /data directory writable for
+      # the circleci user
+      - run:
+          name: Create writable /data
+          command: |
+            sudo mkdir /data && \
+            sudo chown circleci:circleci /data
+      # Run back-end (Django) test suite
+      #
+      # Nota bene: to run the django test suite, we need to ensure that
+      # Postgresql service is up and ready. To achieve this, we wrap the pytest
+      # command execution with dockerize, a tiny tool installed in the CircleCI
+      # image. In our case, dockerize will wait up to one minute that the database
+      # opened its tcp port (5432).
+      - run:
+          name: Run tests
+          command: |
+            dockerize \
+              -wait tcp://localhost:5432 \
+              -timeout 60s \
+                ~/.local/bin/pytest
+
+  # ---- Packaging jobs ----
+  package:
+    docker:
+      - image: circleci/python:3.8-buster
+    working_directory: ~/fun
+    steps:
+      - checkout
+      - run:
+          name: Build python package
+          command: python setup.py sdist bdist_wheel
+      # Persist build packages to the workspace
+      - persist_to_workspace:
+          root: ~/fun
+          paths:
+            - dist
+      # Store packages as artifacts to download/test them
+      - store_artifacts:
+          path: ~/fun/dist
+
+  # Publishing to PyPI requires that:
+  #   * you already registered to pypi.org
+  #   * you have define both the TWINE_USERNAME & TWINE_PASSWORD secret
+  #     environment variables in CircleCI UI (with your PyPI credentials)
+  pypi:
+    docker:
+      - image: circleci/python:3.8-buster
+    working_directory: ~/fun
+    steps:
+      - checkout
+      # Restore built python packages
+      - attach_workspace:
+          at: ~/fun
+      - run:
+          name: List built packages
+          command: ls dist/*
+      - run:
+          name: Install base requirements (twine)
+          command: pip install --user .[ci]
+      - run:
+          name: Upload built packages to PyPI
+          command: ~/.local/bin/twine upload dist/*
+
+workflows:
+  version: 2
+
+  django-lti-toolbox:
+    jobs:
+      # Git jobs
+      #
+      # Check validity of git history
+      - lint-git:
+          filters:
+            tags:
+              only: /.*/
+      # Check CHANGELOG update
+      - check-changelog:
+          filters:
+            branches:
+              ignore: master
+            tags:
+              only: /(?!^v).*/
+      - lint-changelog:
+          filters:
+            branches:
+              ignore: master
+            tags:
+              only: /.*/
+
+      # Backend jobs
+      #
+      # Build, lint and test production and development Docker images
+      # (debian-based)
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - lint:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+      - test:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+
+      # Packaging: python
+      #
+      # Build the python package
+      - package:
+          requires:
+            - test
+          filters:
+            tags:
+              only: /.*/
+
+      # PyPI publication.
+      #
+      # Publish python package to PYPI only if all build, lint and test jobs
+      # succeed and it has been tagged with a tag starting with the letter v
+      - pypi:
+          requires:
+            - package
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
