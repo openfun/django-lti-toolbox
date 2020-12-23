@@ -25,6 +25,13 @@ class LTIConsumer(models.Model):
         blank=False,
     )
 
+    url = models.URLField(
+        max_length=1024,
+        verbose_name=_("Consumer site URL"),
+        help_text=_("URL of the LTI consumer website"),
+        blank=True,
+    )
+
     class Meta:
         """Options for the ``LTIConsumer`` model."""
 

@@ -1,5 +1,5 @@
 """Test the lti_toolbox models"""
-
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from lti_toolbox.factories import LTIConsumerFactory
@@ -71,3 +71,23 @@ class LTIPassportTestCase(TestCase):
         passport4.save()
         self.assertEqual("consumer_key", passport4.oauth_consumer_key)
         self.assertEqual("custom_secret", passport4.shared_secret)
+
+    def test_optional_url(self):
+        """
+        The url field of the model is optional and should be validated
+        by the URLValidator.
+        """
+        consumer1 = LTIConsumerFactory(url="")
+        consumer1.full_clean()
+        consumer1.save()
+        self.assertEqual("", consumer1.url)
+
+        consumer2 = LTIConsumerFactory(url="https://www.example.com/test")
+        consumer2.full_clean()
+        consumer2.save()
+        self.assertEqual("https://www.example.com/test", consumer2.url)
+
+        consumer3 = LTIConsumerFactory(url="xx:/invalid-url/")
+        with self.assertRaises(ValidationError):
+            consumer3.full_clean()
+            consumer3.save()
