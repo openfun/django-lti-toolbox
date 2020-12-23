@@ -14,6 +14,7 @@ class LTIConsumerFactory(DjangoModelFactory):
 
     slug = factory.Sequence(lambda n: f"consumer{n}")
     title = factory.Sequence(lambda n: f"Consumer {n}")
+    url = factory.Sequence(lambda n: f"https://www.example.com/consumer-{n}/")
 
 
 class LTIPassportFactory(DjangoModelFactory):
