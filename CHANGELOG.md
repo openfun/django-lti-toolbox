@@ -8,6 +8,12 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.1] - 2022-02-03
+
+### Fixed
+
+- Replace url method by re_path for django 4.0 compatibility
+
 ## [1.0.0] - 2021-01-13
 
 ### Added
@@ -21,6 +27,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Import `lti_toolbox` library and tests from
   [Ashley](https://github.com/openfun/ashley)
 
-[Unreleased]: https://github.com/openfun/django-lti-toolbox/compare/v1.0.0...master
+[Unreleased]: https://github.com/openfun/django-lti-toolbox/compare/v1.0.1...master
+[1.0.1]: https://github.com/openfun/django-lti-toolbox/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/openfun/django-lti-toolbox/compare/v1.0.0b1...v1.0.0
 [1.0.0b1]: https://github.com/openfun/django-lti-toolbox/compare/814377082b89abd6c7e47022462aefee2399e53d...v1.0.0b1
