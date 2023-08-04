@@ -15,8 +15,11 @@ from .lti import LTI
 @method_decorator(csrf_exempt, name="dispatch")
 class BaseLTIView(ABC, View):
     """
-    Abstract view to help building LTI authenticated views.
-    It is convenient if you want to handle dynamic LTI launch URLs.
+    Abstract view for handling views from an LTI Launch request.
+
+    This class verifies the authenticity of the incoming LTI requests.
+    Subclasses must implement the _do_on_success() method to define custom
+    processing of successful LTI requests.
     """
 
     def post(self, request, *args, **kwargs) -> HttpResponse:  # pylint: disable=W0613
@@ -30,11 +33,7 @@ class BaseLTIView(ABC, View):
 
     @abstractmethod
     def _do_on_success(self, lti_request: LTI) -> HttpResponse:
-        """
-        Handler for successfully verified LTI launch requests.
-        You have to define your own handler according to your project needs.
-        It can be used to call an authentication backend, to redirect the user...etc
-        """
+        """Process the request when the LTI launch requests is verified."""
         raise NotImplementedError()
 
     def _do_on_failure(  # pylint: disable=R0201
@@ -50,8 +49,12 @@ class BaseLTIView(ABC, View):
 @method_decorator(csrf_exempt, name="dispatch")
 class BaseLTIAuthView(ABC, View):
     """
-    Abstract view to help building LTI authenticated views.
-    It is convenient if you want to handle dynamic LTI launch URLs.
+    Abstract view for handling authenticated views from an LTI Launch request.
+
+    This class verifies the authenticity of the incoming LTI requests,
+    and performs user authentication.
+    Subclasses must implement the _do_on_login() method to define custom
+    processing of authenticated users via LTI.
     """
 
     def post(self, request, *args, **kwargs) -> HttpResponse:  # pylint: disable=W0613
