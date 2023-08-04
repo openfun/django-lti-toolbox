@@ -28,6 +28,7 @@ class BaseLTIView(ABC, View):
         except LTIException as error:
             return self._do_on_failure(request, error)
 
+    @abstractmethod
     def _do_on_success(self, lti_request: LTI) -> HttpResponse:
         """
         Handler for successfully verified LTI launch requests.
