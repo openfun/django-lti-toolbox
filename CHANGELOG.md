@@ -22,7 +22,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Add a url field to the LTIConsumer model
+- Add an url field to the LTIConsumer model
 
 ## [1.0.0b1] - 2020-06-11
 
