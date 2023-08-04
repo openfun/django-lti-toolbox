@@ -8,6 +8,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Use modern python method decorator for all LTI view classes
+
 ## [1.0.1] - 2022-02-03
 
 ### Fixed
