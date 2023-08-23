@@ -10,7 +10,8 @@ from views import LaunchURLWithAuth, SimpleLaunchURLVerification, demo_consumer
 urlpatterns = [
     # / Redirects to the demo consumer
     re_path(
-        r"^$", RedirectView.as_view(url=reverse_lazy("demo_consumer"), permanent=False),
+        r"^$",
+        RedirectView.as_view(url=reverse_lazy("demo_consumer"), permanent=False),
     ),
     # Demo LTI consumer
     re_path(r"^consumer$", demo_consumer, name="demo_consumer"),
@@ -21,7 +22,11 @@ urlpatterns = [
         name="lti.launch-url-verification",
     ),
     # LTI launch request handler with authentication
-    path("lti/launch-auth", LaunchURLWithAuth.as_view(), name="lti.launch-url-auth",),
+    path(
+        "lti/launch-auth",
+        LaunchURLWithAuth.as_view(),
+        name="lti.launch-url-auth",
+    ),
     # Dynamic LTI launch request handler with authentication and a custom parameter (uuid)
     path(
         "lti/launch/<uuid:uuid>",
