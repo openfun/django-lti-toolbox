@@ -4,16 +4,17 @@ Utilities to represent and validate LTI Launch parameters
 This is based on lti library (https://github.com/pylti/lti).
 """
 from collections.abc import MutableMapping
-from typing import List, Union
+from typing import List, Set, Union
 from urllib.parse import urlencode
 
-from .exceptions import InvalidLaunchParamException, MissingLaunchParamException
+from .exceptions import InvalidParamException, MissingParamException
 
 DEFAULT_LTI_VERSION = "LTI-1.0"
+SELECTION_PARAMS_MESSAGE_TYPE = "ContentItemSelectionRequest"
 
-LAUNCH_PARAMS_REQUIRED = ["lti_message_type", "lti_version", "resource_link_id"]
+LAUNCH_PARAMS_REQUIRED = {"lti_message_type", "lti_version", "resource_link_id"}
 
-LAUNCH_PARAMS_RECOMMENDED = [
+LAUNCH_PARAMS_RECOMMENDED = {
     "context_id",
     "context_label",
     "context_title",
@@ -41,24 +42,24 @@ LAUNCH_PARAMS_RECOMMENDED = [
     "tool_consumer_instance_url",
     "user_id",
     "user_image",
-]
+}
 
-LAUNCH_PARAMS_LIS = [
+LAUNCH_PARAMS_LIS = {
     "lis_course_offering_sourcedid",
     "lis_course_section_sourcedid",
     "lis_outcome_service_url",
     "lis_person_sourcedid",
     "lis_result_sourcedid",
-]
+}
 
-LAUNCH_PARAMS_RETURN_URL = [
+LAUNCH_PARAMS_RETURN_URL = {
     "lti_errorlog",
     "lti_errormsg",
     "lti_log",
     "lti_msg",
-]
+}
 
-LAUNCH_PARAMS_OAUTH = [
+LAUNCH_PARAMS_OAUTH = {
     "oauth_callback",
     "oauth_consumer_key",
     "oauth_nonce",
@@ -67,19 +68,19 @@ LAUNCH_PARAMS_OAUTH = [
     "oauth_timestamp",
     "oauth_token",
     "oauth_version",
-]
+}
 
-LAUNCH_PARAMS_IS_LIST = [
+LAUNCH_PARAMS_IS_LIST = {
     "accept_media_types",
     "accept_presentation_document_targets",
     "context_type",
     "role_scope_mentor",
     "roles",
-]
+}
 
-LAUNCH_PARAMS_CANVAS = ["selection_directive", "text"]
+LAUNCH_PARAMS_CANVAS = {"selection_directive", "text"}
 
-CONTENT_PARAMS_REQUEST = [
+CONTENT_PARAMS_REQUEST = {
     "accept_copy_advice",
     "accept_media_types",
     "accept_multiple",
@@ -90,41 +91,62 @@ CONTENT_PARAMS_REQUEST = [
     "content_item_return_url",
     "data",
     "title",
-]
+}
 
-CONTENT_PARAMS_RESPONSE = [
+CONTENT_PARAMS_RESPONSE = {
     "content_items",
     "lti_errorlog",
     "lti_errormsg",
     "lti_log",
     "lti_msg",
-]
+}
 
-REGISTRATION_PARAMS = [
+REGISTRATION_PARAMS = {
     "reg_key",
     "reg_password",
     "tc_profile_url",
-]
+}
 
 LAUNCH_PARAMS = (
     CONTENT_PARAMS_REQUEST
-    + CONTENT_PARAMS_RESPONSE
-    + LAUNCH_PARAMS_CANVAS
-    + LAUNCH_PARAMS_LIS
-    + LAUNCH_PARAMS_OAUTH
-    + LAUNCH_PARAMS_RECOMMENDED
-    + LAUNCH_PARAMS_REQUIRED
-    + LAUNCH_PARAMS_RETURN_URL
-    + REGISTRATION_PARAMS
+    | CONTENT_PARAMS_RESPONSE
+    | LAUNCH_PARAMS_CANVAS
+    | LAUNCH_PARAMS_LIS
+    | LAUNCH_PARAMS_OAUTH
+    | LAUNCH_PARAMS_RECOMMENDED
+    | LAUNCH_PARAMS_REQUIRED
+    | LAUNCH_PARAMS_RETURN_URL
+    | REGISTRATION_PARAMS
 )
 
+SELECTION_PARAMS_REQUIRED = {
+    "lti_message_type",
+    "lti_version",
+    "accept_media_types",
+    "accept_presentation_document_targets",
+    "content_item_return_url",
+}
+SELECTION_PARAMS_SHOULD_NOT_BE_PASSED = {
+    "resource_link_id",
+    "resource_link_title",
+    "resource_link_description",
+    "launch_presentation_return_url",
+    "lis_result_sourcedid",
+}
 
-class LaunchParams(MutableMapping):
+SELECTION_PARAMS = LAUNCH_PARAMS - SELECTION_PARAMS_SHOULD_NOT_BE_PASSED
+
+
+class ParamsMixins(MutableMapping):
     """
-    Represents the params for a LTI launch request. Provides dict-like
-    behavior through the use of the MutableMapping ABC mixin.  Strictly
+    Represents the params for an LTI request. Provides dict-like
+    behavior through the use of the MutableMapping ABC mixin. Strictly
     enforces that params are valid LTI params.
     """
+
+    params_allowed: Set[str] = set()
+    params_required: Set[str] = set()
+    params_is_list: Set[str] = set()
 
     def __init__(self, *args, **kwargs):
 
@@ -134,11 +156,11 @@ class LaunchParams(MutableMapping):
         # now verify we only got valid launch params
         for k in self.keys():
             if not self.valid_param(k):
-                raise InvalidLaunchParamException(k)
+                raise InvalidParamException(k)
 
-        for param in LAUNCH_PARAMS_REQUIRED:
+        for param in self.params_required:
             if param not in self:
-                raise MissingLaunchParamException(param)
+                raise MissingParamException(param)
 
     def _param_value(self, param: str) -> Union[str, List]:
         """Get the value of a LTI parameter.
@@ -149,12 +171,11 @@ class LaunchParams(MutableMapping):
         Returns:
             The value of the LTI parameter, as a str or a List, depending on the parameter.
         """
-        if param in LAUNCH_PARAMS_IS_LIST:
+        if param in self.params_is_list:
             return [x.strip() for x in self._params[param].split(",")]
         return self._params[param]
 
-    @staticmethod
-    def valid_param(param: str) -> bool:
+    def valid_param(self, param: str) -> bool:
         """Checks if a LTI parameter is valid or not.
 
         Args:
@@ -166,7 +187,7 @@ class LaunchParams(MutableMapping):
         """
         if param.startswith("custom_") or param.startswith("ext_"):
             return True
-        return param in LAUNCH_PARAMS
+        return param in self.params_allowed
 
     def __len__(self):
         return len(self._params)
@@ -182,7 +203,7 @@ class LaunchParams(MutableMapping):
 
     def __setitem__(self, key, value):
         if not self.valid_param(key):
-            raise InvalidLaunchParamException(key)
+            raise InvalidParamException(key)
         if key in LAUNCH_PARAMS_IS_LIST:
             if isinstance(value, list):
                 value = ",".join([x.strip() for x in value])
@@ -208,3 +229,19 @@ class LaunchParams(MutableMapping):
             if isinstance(value, list):
                 params[key] = ",".join(value)
         return urlencode(params)
+
+
+class LaunchParams(ParamsMixins):  # pylint: disable=too-many-ancestors
+    """Represents the params for an LTI Launch request."""
+
+    params_allowed = LAUNCH_PARAMS
+    params_required = LAUNCH_PARAMS_REQUIRED
+    params_is_list = LAUNCH_PARAMS_IS_LIST
+
+
+class SelectionParams(ParamsMixins):  # pylint: disable=too-many-ancestors
+    """Represents the params for an LTI Content-Item selection request."""
+
+    params_allowed = SELECTION_PARAMS
+    params_required = SELECTION_PARAMS_REQUIRED
+    params_is_list = LAUNCH_PARAMS_IS_LIST

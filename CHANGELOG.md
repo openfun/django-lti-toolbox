@@ -8,6 +8,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Accept Content-Item selection request used in a deep linking context
+
 ### Fixed
 
 - Use modern python method decorator for all LTI view classes

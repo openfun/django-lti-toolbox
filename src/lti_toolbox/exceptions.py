@@ -16,24 +16,24 @@ class LTIRequestNotVerifiedException(LTIException):
         super().__init__(message)
 
 
-class LaunchParamException(Exception):
-    """Custom Exception related to LTI launch param processing."""
+class ParamException(Exception):
+    """Custom Exception related to LTI param processing."""
 
 
-class InvalidLaunchParamException(LaunchParamException):
-    """Custom Exception thrown when an invalid parameter is found in a LTI launch request."""
+class InvalidParamException(ParamException):
+    """Custom Exception thrown when an invalid parameter is found in an LTI request."""
 
     def __init__(self, param):
-        message = f"{param:s} is not a valid launch param"
+        message = f"{param:s} is not a valid param"
         super().__init__(message)
 
 
-class MissingLaunchParamException(LaunchParamException):
+class MissingParamException(ParamException):
     """
     Custom Exception thrown when a required LTI parameter is missing in
-    an LTI launch request.
+    an LTI request.
     """
 
     def __init__(self, param):
-        message = f"missing launch param : {param:s}"
+        message = f"missing param : {param:s}"
         super().__init__(message)
