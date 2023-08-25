@@ -5,20 +5,21 @@ from typing import Any, Optional
 
 from oauthlib.oauth1 import SignatureOnlyEndpoint
 
-from .exceptions import (
-    LaunchParamException,
-    LTIException,
-    LTIRequestNotVerifiedException,
+from .exceptions import LTIException, LTIRequestNotVerifiedException, ParamException
+from .launch_params import (
+    SELECTION_PARAMS_MESSAGE_TYPE,
+    LaunchParams,
+    ParamsMixins,
+    SelectionParams,
 )
-from .launch_params import LaunchParams
 from .models import LTIConsumer, LTIPassport
 from .validator import LTIRequestValidator
 
 
 class LTI:
-    """The LTI object abstracts an LTI launch request.
+    """The LTI object abstracts an LTI request.
 
-    It provides properties and methods to inspect the launch request.
+    It provides properties and methods to inspect a launch or selection request.
     """
 
     def __init__(self, request):
@@ -33,37 +34,47 @@ class LTI:
         self._params = {}
         self._verified = False
 
+    def _process_params(self) -> ParamsMixins:
+        """Process LTI parameters based on request type."""
+        is_selection_request = (
+                self.request.POST.get("lti_message_type")
+                == SELECTION_PARAMS_MESSAGE_TYPE
+        )
+        try:
+            params = (
+                SelectionParams(self.request.POST)
+                if is_selection_request
+                else LaunchParams(self.request.POST)
+            )
+        except ParamException as error:
+            raise LTIException(f"Exception while processing parameters: {error}")
+
+        return params
+
     def verify(self) -> bool:
         """Verify the LTI request.
 
         Returns:
-            bool: True if the LTI launch request is valid.
+            bool: True if the LTI request is valid.
 
         Raises:
             LTIException: Raised if request validation fails
         """
-
-        try:
-            launch_params = LaunchParams(self.request.POST)
-        except LaunchParamException as error:
-            raise LTIException(
-                "Exception while processing launch parameters : {}".format(error)
-            )
-
+        params = self._process_params()
         validator = LTIRequestValidator()
         oauth_endpoint = SignatureOnlyEndpoint(validator)
 
         self._valid, _ = oauth_endpoint.validate_request(
             uri=self.request.build_absolute_uri(),
             http_method=self.request.method,
-            body=launch_params.urlencoded,
+            body=params.urlencoded,
             headers=self.request.headers,
         )
 
         if self._valid is not True:
             raise LTIException("LTI verification failed")
 
-        self._params = launch_params
+        self._params = params
         self._verified = True
 
         return self._valid
@@ -93,7 +104,7 @@ class LTI:
         return self._params.get(name, default)
 
     def get_consumer(self) -> LTIConsumer:
-        """Retrieve the LTI consumer that initiated the launch request."""
+        """Retrieve the LTI consumer that initiated the request."""
         consumer_key = self.get_param("oauth_consumer_key")
         passport = LTIPassport.objects.get(
             oauth_consumer_key=consumer_key, is_enabled=True

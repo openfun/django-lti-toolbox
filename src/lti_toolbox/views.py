@@ -15,7 +15,7 @@ from .lti import LTI
 @method_decorator(csrf_exempt, name="dispatch")
 class BaseLTIView(ABC, View):
     """
-    Abstract view for handling views from an LTI Launch request.
+    Abstract view for handling views from an LTI request.
 
     This class verifies the authenticity of the incoming LTI requests.
     Subclasses must implement the _do_on_success() method to define custom
@@ -33,23 +33,23 @@ class BaseLTIView(ABC, View):
 
     @abstractmethod
     def _do_on_success(self, lti_request: LTI) -> HttpResponse:
-        """Process the request when the LTI launch requests is verified."""
+        """Process the request when the LTI requests is verified."""
         raise NotImplementedError()
 
     def _do_on_failure(  # pylint: disable=R0201
         self, request: HttpRequest, error: LTIException  # pylint: disable=W0613
     ) -> HttpResponse:
         """
-        Default handler for invalid LTI launch requests.
+        Default handler for invalid LTI requests.
         You are encouraged to define your own handler according to your project needs.
         """
-        return HttpResponseForbidden("Invalid LTI launch request")
+        return HttpResponseForbidden("Invalid LTI request")
 
 
 @method_decorator(csrf_exempt, name="dispatch")
 class BaseLTIAuthView(ABC, View):
     """
-    Abstract view for handling authenticated views from an LTI Launch request.
+    Abstract view for handling authenticated views from an LTI request.
 
     This class verifies the authenticity of the incoming LTI requests,
     and performs user authentication.
@@ -88,7 +88,7 @@ class BaseLTIAuthView(ABC, View):
         self, request: HttpRequest, error: LTIException  # pylint: disable=W0613
     ) -> HttpResponse:
         """
-        Default handler for invalid LTI launch requests.
+        Default handler for invalid LTI requests.
         You are encouraged to define your own handler according to your project needs.
         """
-        return HttpResponseForbidden("Invalid LTI launch request")
+        return HttpResponseForbidden("Invalid LTI request")
