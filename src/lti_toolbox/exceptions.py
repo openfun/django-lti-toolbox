@@ -7,7 +7,7 @@ class LTIException(Exception):
 
 class LTIRequestNotVerifiedException(LTIException):
     """
-    Custom LTI exception thrown when someone try to access
+    Custom LTI exception thrown when someone tries to access
     LTI parameters before verifying the request.
     """
 

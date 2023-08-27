@@ -13,7 +13,7 @@ class LaunchParamTestCase(TestCase):
     """Test the LaunchParam class"""
 
     def setUp(self):
-        """Override the setUp method to instanciate and serve a request factory."""
+        """Override the setUp method to instantiate and serve a request factory."""
         super().setUp()
         self.request_factory = RequestFactory()
 
@@ -99,7 +99,7 @@ class LaunchParamTestCase(TestCase):
         )
 
     def test_urlencoded(self):
-        """Test urlencoded representation of a LTI launch request."""
+        """Test urlencoded representation of an LTI launch request."""
 
         launch_params = LaunchParams(
             {

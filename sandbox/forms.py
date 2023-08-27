@@ -7,7 +7,7 @@ from lti_toolbox.models import LTIPassport
 
 
 class PassportChoiceField(forms.ModelChoiceField):
-    """Select a LTI password"""
+    """Select an LTI password"""
 
     def label_from_instance(self, obj):
         return f"{obj.consumer.slug} - {obj.title}"

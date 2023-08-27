@@ -163,7 +163,7 @@ class ParamsMixins(MutableMapping):
                 raise MissingParamException(param)
 
     def _param_value(self, param: str) -> Union[str, List]:
-        """Get the value of a LTI parameter.
+        """Get the value of an LTI parameter.
 
         Args:
             param: LTI parameter name
@@ -176,7 +176,7 @@ class ParamsMixins(MutableMapping):
         return self._params[param]
 
     def valid_param(self, param: str) -> bool:
-        """Checks if a LTI parameter is valid or not.
+        """Checks if an LTI parameter is valid or not.
 
         Args:
             param: LTI parameter name

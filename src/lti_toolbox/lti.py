@@ -89,7 +89,7 @@ class LTI:
         return self._verified and self._valid
 
     def get_param(self, name: str, default: Any = None):
-        """Retrieve a LTI parameter value given its name.
+        """Retrieve an LTI parameter value given its name.
 
         Args:
             name: Name of the LTI parameter

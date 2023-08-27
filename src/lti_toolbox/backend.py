@@ -24,7 +24,7 @@ class LTIBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None, **kwargs):
         """
-        Authenticate a user from a LTI request
+        Authenticate a user from an LTI request
 
         Args:
             request: django http request
@@ -62,7 +62,7 @@ class LTIBackend(ModelBackend):
 
     @staticmethod
     def _get_mandatory_param(lti_request: LTI, param: str) -> Any:
-        """Get a LTI parameter or throw a exception if not defined."
+        """Get an LTI parameter or throw a exception if not defined."
 
         Args:
             lti_request: The verified LTI request

@@ -12,7 +12,7 @@ def sign_parameters(passport, lti_parameters, url):
 
     Args:
         passport: The LTIPassport to use to sign the oauth request
-        lti_parameters: A dictionnary of parameters to sign
+        lti_parameters: A dictionary of parameters to sign
         url: The LTI launch URL
 
     Returns:

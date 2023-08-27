@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 class LTIConsumer(models.Model):
     """
-    Model representing a LTI Consumer.
+    Model representing an LTI Consumer.
     """
 
     slug = models.SlugField(
@@ -48,7 +48,7 @@ class LTIPassport(models.Model):
     """
     Model representing an LTI passport for LTI consumers to interact with the django application.
 
-    A LTI consumer can have multiple passports.
+    An LTI consumer can have multiple passports.
 
     An LTI passport stores credentials that can be used by an LTI consumer to interact with
     the django application acting as an LTI provider.
