@@ -129,5 +129,5 @@ class LTIPassport(models.Model):
     def generate_shared_secret() -> str:
         """Generate a random consumer key."""
         secret_chars = string.ascii_letters + string.digits + "!#$%&*+-=?@^_"
-        secret_size = secret_size = secrets.choice(range(40, 60))
+        secret_size = secrets.choice(range(40, 60))
         return "".join(secrets.choice(secret_chars) for _ in range(secret_size))
