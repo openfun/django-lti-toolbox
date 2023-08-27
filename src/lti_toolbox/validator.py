@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 class LTIRequestValidator(RequestValidator):
     """
     This validator implements the RequestValidator from the oauthlib, but only with methods
-    required for a LTI launch request.
+    required for an LTI launch request.
     """
 
     LTI_REPLAY_PROTECTION_CACHE = "lti_replay"

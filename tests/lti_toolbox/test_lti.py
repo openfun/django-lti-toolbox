@@ -1,4 +1,4 @@
-"""Test the LTI interconnection with a LTI consumer."""
+"""Test the LTI interconnection with an LTI consumer."""
 from urllib.parse import urlencode
 
 from django.test import RequestFactory, TestCase
@@ -14,7 +14,7 @@ class LTITestCase(TestCase):
     """Test the LTI class"""
 
     def setUp(self):
-        """Override the setUp method to instanciate and serve a request factory."""
+        """Override the setUp method to instantiate and serve a request factory."""
         super().setUp()
         self.request_factory = RequestFactory()
         self._consumer = LTIConsumerFactory(slug="test_lti")
