@@ -128,7 +128,6 @@ class LaunchParamTestCase(TestCase):
             )
 
 
-
 class SelectionParamTestCase(TestCase):
     """Test the SelectionParam class"""
 
@@ -144,7 +143,7 @@ class SelectionParamTestCase(TestCase):
         url = "http://testserver/lti/launch"
         signed_parameters = sign_parameters(passport, lti_parameters, url)
         return SelectionParams(signed_parameters)
-    
+
     def test_only_required_parameters(self):
         """Test validation of a minimalistic LTI Content-Item
         Selection request with only required parameters.
