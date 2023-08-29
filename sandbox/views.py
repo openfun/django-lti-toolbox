@@ -20,7 +20,7 @@ from forms import LTIConsumerForm
 class SimpleLaunchURLVerification(BaseLTIView):
     """Example view to handle LTI launch request verification."""
 
-    def _do_on_success(self, lti_request: LTI) -> HttpResponse:
+    def _do_on_success(self, lti_request: LTI, *args, **kwargs) -> HttpResponse:
         # Render a template with some debugging information
         context = {
             "message": "LTI request verified successfully",
