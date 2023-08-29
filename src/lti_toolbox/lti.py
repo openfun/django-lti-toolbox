@@ -6,12 +6,7 @@ from typing import Any, Optional
 from oauthlib.oauth1 import SignatureOnlyEndpoint
 
 from .exceptions import LTIException, LTIRequestNotVerifiedException, ParamException
-from .launch_params import (
-    SELECTION_PARAMS_MESSAGE_TYPE,
-    LaunchParams,
-    ParamsMixins,
-    SelectionParams,
-)
+from .launch_params import LaunchParams, LTIMessageType, ParamsMixins, SelectionParams
 from .models import LTIConsumer, LTIPassport
 from .validator import LTIRequestValidator
 
@@ -37,8 +32,8 @@ class LTI:
     def _process_params(self) -> ParamsMixins:
         """Process LTI parameters based on request type."""
         is_selection_request = (
-                self.request.POST.get("lti_message_type")
-                == SELECTION_PARAMS_MESSAGE_TYPE
+            self.request.POST.get("lti_message_type")
+            == LTIMessageType.SELECTION_REQUEST.value
         )
         try:
             params = (

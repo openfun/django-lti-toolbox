@@ -4,13 +4,22 @@ Utilities to represent and validate LTI Launch parameters
 This is based on lti library (https://github.com/pylti/lti).
 """
 from collections.abc import MutableMapping
+from enum import Enum
 from typing import List, Set, Union
 from urllib.parse import urlencode
 
 from .exceptions import InvalidParamException, MissingParamException
 
 DEFAULT_LTI_VERSION = "LTI-1.0"
-SELECTION_PARAMS_MESSAGE_TYPE = "ContentItemSelectionRequest"
+
+
+class LTIMessageType(Enum):
+    """Enum describing all type of message received through LTI requests."""
+
+    LAUNCH_REQUEST = "basic-lti-launch-request"
+    SELECTION_REQUEST = "ContentItemSelectionRequest"
+    SELECTION_RESPONSE = "ContentItemSelection"
+
 
 LAUNCH_PARAMS_REQUIRED = {"lti_message_type", "lti_version", "resource_link_id"}
 

@@ -11,6 +11,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Accept Content-Item selection request used in a deep linking context
+- Add an LTIMessageType enum
 
 ### Fixed
 
