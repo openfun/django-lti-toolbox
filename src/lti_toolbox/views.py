@@ -27,12 +27,12 @@ class BaseLTIView(ABC, View):
         lti_request = LTI(request)
         try:
             lti_request.verify()
-            return self._do_on_success(lti_request)
+            return self._do_on_success(lti_request, *args, **kwargs)
         except LTIException as error:
             return self._do_on_failure(request, error)
 
     @abstractmethod
-    def _do_on_success(self, lti_request: LTI) -> HttpResponse:
+    def _do_on_success(self, lti_request: LTI, *args, **kwargs) -> HttpResponse:
         """Process the request when the LTI requests is verified."""
         raise NotImplementedError()
 
