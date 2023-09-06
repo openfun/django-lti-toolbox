@@ -33,7 +33,7 @@ class LTI:
         """Process LTI parameters based on request type."""
         is_selection_request = (
             self.request.POST.get("lti_message_type")
-            == LTIMessageType.SELECTION_REQUEST.value
+            == LTIMessageType.SELECTION_REQUEST
         )
         try:
             params = (
