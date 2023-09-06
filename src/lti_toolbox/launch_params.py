@@ -146,7 +146,7 @@ SELECTION_PARAMS_SHOULD_NOT_BE_PASSED = {
 SELECTION_PARAMS = LAUNCH_PARAMS - SELECTION_PARAMS_SHOULD_NOT_BE_PASSED
 
 
-class ParamsMixins(MutableMapping):
+class ParamsMixin(MutableMapping):
     """
     Represents the params for an LTI request. Provides dict-like
     behavior through the use of the MutableMapping ABC mixin. Strictly
@@ -240,7 +240,7 @@ class ParamsMixins(MutableMapping):
         return urlencode(params)
 
 
-class LaunchParams(ParamsMixins):  # pylint: disable=too-many-ancestors
+class LaunchParams(ParamsMixin):  # pylint: disable=too-many-ancestors
     """Represents the params for an LTI Launch request."""
 
     params_allowed = LAUNCH_PARAMS
@@ -248,7 +248,7 @@ class LaunchParams(ParamsMixins):  # pylint: disable=too-many-ancestors
     params_is_list = LAUNCH_PARAMS_IS_LIST
 
 
-class SelectionParams(ParamsMixins):  # pylint: disable=too-many-ancestors
+class SelectionParams(ParamsMixin):  # pylint: disable=too-many-ancestors
     """Represents the params for an LTI Content-Item selection request."""
 
     params_allowed = SELECTION_PARAMS
