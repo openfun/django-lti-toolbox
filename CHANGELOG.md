@@ -15,6 +15,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 - Rename ParamsMixins to ParamsMixin
+- Add string inheritance to the LTIMessageType enum
 
 ## [1.1.0] - 2023-08-30
 

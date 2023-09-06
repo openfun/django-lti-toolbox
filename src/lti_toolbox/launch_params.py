@@ -14,6 +14,7 @@ DEFAULT_LTI_VERSION = "LTI-1.0"
 
 
 class LTIMessageType(Enum):
+class LTIMessageType(str, Enum):
     """Enum describing all type of message received through LTI requests."""
 
     LAUNCH_REQUEST = "basic-lti-launch-request"
