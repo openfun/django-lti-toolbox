@@ -12,6 +12,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Add an utils function sign_parameters used for testing
 
+### Fixed
+
+- Rename ParamsMixins to ParamsMixin
+
 ## [1.1.0] - 2023-08-30
 
 ### Added

@@ -6,7 +6,7 @@ from typing import Any, Optional
 from oauthlib.oauth1 import SignatureOnlyEndpoint
 
 from .exceptions import LTIException, LTIRequestNotVerifiedException, ParamException
-from .launch_params import LaunchParams, LTIMessageType, ParamsMixins, SelectionParams
+from .launch_params import LaunchParams, LTIMessageType, ParamsMixin, SelectionParams
 from .models import LTIConsumer, LTIPassport
 from .validator import LTIRequestValidator
 
@@ -29,7 +29,7 @@ class LTI:
         self._params = {}
         self._verified = False
 
-    def _process_params(self) -> ParamsMixins:
+    def _process_params(self) -> ParamsMixin:
         """Process LTI parameters based on request type."""
         is_selection_request = (
             self.request.POST.get("lti_message_type")
