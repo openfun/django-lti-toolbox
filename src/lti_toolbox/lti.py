@@ -1,12 +1,18 @@
 """LTI module that supports LTI 1.0.
 """
 import re
-from typing import Any, Optional
+from typing import Any, Optional, Set
 
 from oauthlib.oauth1 import SignatureOnlyEndpoint
 
 from .exceptions import LTIException, LTIRequestNotVerifiedException, ParamException
-from .launch_params import LaunchParams, LTIMessageType, ParamsMixin, SelectionParams
+from .launch_params import (
+    LaunchParams,
+    LTIMessageType,
+    LTIRole,
+    ParamsMixin,
+    SelectionParams,
+)
 from .models import LTIConsumer, LTIPassport
 from .validator import LTIRequestValidator
 
@@ -162,3 +168,44 @@ class LTI:
 
         """
         return re.search(r"^course-v[0-9]:.*$", self.get_param("context_id"))
+
+    def _has_any_of_roles(self, roles: Set[str]):
+        """Check if the LTI user has any of the provided roles."""
+        return not roles.isdisjoint(self.roles)
+
+    @property
+    def is_student(self):
+        """Check if the LTI user is a student.
+
+        Returns:
+            boolean: True if the LTI user is a student.
+
+        """
+        return self._has_any_of_roles({LTIRole.STUDENT, LTIRole.LEARNER})
+
+    @property
+    def is_instructor(self):
+        """Check if the LTI user is an instructor.
+
+        Returns:
+            boolean: True if the LTI user is an instructor.
+
+        """
+        return self._has_any_of_roles(
+            {LTIRole.INSTRUCTOR, LTIRole.TEACHER, LTIRole.STAFF}
+        )
+
+    @property
+    def is_administrator(self):
+        """Check if the LTI user is an administrator.
+
+        Returns:
+            boolean: True if the LTI user is an administrator.
+
+        """
+        return self._has_any_of_roles({LTIRole.ADMINISTRATOR})
+
+    @property
+    def can_edit_content(self):
+        """Check if the LTI user can edit LMS content."""
+        return self.is_administrator or self.is_instructor

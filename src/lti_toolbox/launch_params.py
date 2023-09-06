@@ -13,7 +13,17 @@ from .exceptions import InvalidParamException, MissingParamException
 DEFAULT_LTI_VERSION = "LTI-1.0"
 
 
-class LTIMessageType(Enum):
+class LTIRole(str, Enum):
+    """Enum describing all context roles of an LTI user."""
+
+    ADMINISTRATOR = "administrator"
+    INSTRUCTOR = "instructor"
+    LEARNER = "learner"
+    TEACHER = "teacher"
+    STAFF = "staff"
+    STUDENT = "student"
+
+
 class LTIMessageType(str, Enum):
     """Enum describing all type of message received through LTI requests."""
 

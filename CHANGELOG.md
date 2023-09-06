@@ -11,6 +11,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Add an utils function sign_parameters used for testing
+- Enhance the LTI class with role-checking properties
+- Add an LTIRole enum
 
 ### Fixed
 

@@ -5,6 +5,7 @@ from django.test import RequestFactory, TestCase
 
 from lti_toolbox.exceptions import LTIException, LTIRequestNotVerifiedException
 from lti_toolbox.factories import LTIConsumerFactory, LTIPassportFactory
+from lti_toolbox.launch_params import LTIRole
 from lti_toolbox.lti import LTI
 from lti_toolbox.utils import CONTENT_TYPE, sign_parameters
 
@@ -207,6 +208,114 @@ class LTITestCase(TestCase):
             }
         )
         self.assertEqual(["student", "moderator"], lti.roles)
+
+    def test_has_any_of_roles(self):
+        # pylint: disable=protected-access
+        """Test _has_any_of_roles property"""
+        lti = self._verified_lti_request(
+            {
+                "lti_message_type": "basic-lti-launch-request",
+                "lti_version": "LTI-1p0",
+                "resource_link_id": "df7",
+                "roles": "Instructor",
+            }
+        )
+        self.assertTrue(lti._has_any_of_roles({"instructor"}))
+        self.assertTrue(lti._has_any_of_roles({"instructor", LTIRole.TEACHER}))
+        self.assertFalse(lti._has_any_of_roles({"Instructor", LTIRole.TEACHER}))
+        self.assertTrue(lti._has_any_of_roles({LTIRole.INSTRUCTOR, LTIRole.TEACHER}))
+
+    def test_roles_check(self):
+        """Test the roles-check properties"""
+        lti = self._verified_lti_request(
+            {
+                "lti_message_type": "basic-lti-launch-request",
+                "lti_version": "LTI-1p0",
+                "resource_link_id": "df7",
+                "roles": "Instructor",
+            }
+        )
+        self.assertTrue(lti.is_instructor)
+        self.assertFalse(lti.is_administrator)
+        self.assertFalse(lti.is_student)
+
+        lti = self._verified_lti_request(
+            {
+                "lti_message_type": "basic-lti-launch-request",
+                "lti_version": "LTI-1p0",
+                "resource_link_id": "df7",
+                "roles": "Student,Moderator",
+            }
+        )
+        self.assertFalse(lti.is_instructor)
+        self.assertFalse(lti.is_administrator)
+        self.assertTrue(lti.is_student)
+
+        lti = self._verified_lti_request(
+            {
+                "lti_message_type": "basic-lti-launch-request",
+                "lti_version": "LTI-1p0",
+                "resource_link_id": "df7",
+                "roles": "Administrator,Instructor",
+            }
+        )
+        self.assertTrue(lti.is_instructor)
+        self.assertTrue(lti.is_administrator)
+        self.assertFalse(lti.is_student)
+
+        lti = self._verified_lti_request(
+            {
+                "lti_message_type": "basic-lti-launch-request",
+                "lti_version": "LTI-1p0",
+                "resource_link_id": "df7",
+                "roles": "WrongRole",
+            }
+        )
+        self.assertFalse(lti.is_instructor)
+        self.assertFalse(lti.is_administrator)
+        self.assertFalse(lti.is_student)
+
+    def test_can_edit_content(self):
+        """Test can_edit_content property"""
+        lti = self._verified_lti_request(
+            {
+                "lti_message_type": "basic-lti-launch-request",
+                "lti_version": "LTI-1p0",
+                "resource_link_id": "df7",
+                "roles": "Instructor",
+            }
+        )
+        self.assertTrue(lti.can_edit_content)
+
+        lti = self._verified_lti_request(
+            {
+                "lti_message_type": "basic-lti-launch-request",
+                "lti_version": "LTI-1p0",
+                "resource_link_id": "df7",
+                "roles": "Student,Moderator",
+            }
+        )
+        self.assertFalse(lti.can_edit_content)
+
+        lti = self._verified_lti_request(
+            {
+                "lti_message_type": "basic-lti-launch-request",
+                "lti_version": "LTI-1p0",
+                "resource_link_id": "df7",
+                "roles": "Administrator,Instructor",
+            }
+        )
+        self.assertTrue(lti.can_edit_content)
+
+        lti = self._verified_lti_request(
+            {
+                "lti_message_type": "basic-lti-launch-request",
+                "lti_version": "LTI-1p0",
+                "resource_link_id": "df7",
+                "roles": "WrongRole",
+            }
+        )
+        self.assertFalse(lti.can_edit_content)
 
     def test_context_title(self):
         """Test the retrieval of the context_title"""
