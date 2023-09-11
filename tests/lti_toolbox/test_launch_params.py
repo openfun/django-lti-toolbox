@@ -5,8 +5,7 @@ from django.test import RequestFactory, TestCase
 from lti_toolbox.exceptions import InvalidParamException, MissingParamException
 from lti_toolbox.factories import LTIConsumerFactory, LTIPassportFactory
 from lti_toolbox.launch_params import LaunchParams, SelectionParams
-
-from .utils import sign_parameters
+from lti_toolbox.utils import sign_parameters
 
 
 class LaunchParamTestCase(TestCase):
