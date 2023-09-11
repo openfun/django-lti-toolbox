@@ -8,6 +8,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Add an utils function sign_parameters used for testing
+
 ## [1.1.0] - 2023-08-30
 
 ### Added

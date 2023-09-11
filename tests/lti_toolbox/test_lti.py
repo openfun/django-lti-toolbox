@@ -6,8 +6,7 @@ from django.test import RequestFactory, TestCase
 from lti_toolbox.exceptions import LTIException, LTIRequestNotVerifiedException
 from lti_toolbox.factories import LTIConsumerFactory, LTIPassportFactory
 from lti_toolbox.lti import LTI
-
-from .utils import CONTENT_TYPE, sign_parameters
+from lti_toolbox.utils import CONTENT_TYPE, sign_parameters
 
 
 class LTITestCase(TestCase):
