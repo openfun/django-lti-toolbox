@@ -141,7 +141,7 @@ class LTITestCase(TestCase):
         self.assertFalse(lti.is_edx_format)
 
     def test_course_info(self):
-        """Test the detection of course informations"""
+        """Test the detection of course information"""
 
         # EdX request
         lti_parameters = {

@@ -24,7 +24,7 @@ DATA_DIR = os.path.join("/", "data")
 
 class Base(Configuration):
     """
-    This is the base configuration every configuration (aka environnement) should inherit from. It
+    This is the base configuration every configuration (aka environment) should inherit from. It
     is recommended to configure third-party applications by creating a configuration mixins in
     ./configurations and compose the Base configuration with those mixins.
     It depends on an environment variable that SHOULD be defined:
@@ -49,7 +49,7 @@ class Base(Configuration):
     SECRET_KEY = values.Value(None)
 
     # SECURE_PROXY_SSL_HEADER allows to fix the scheme in Django's HttpRequest
-    # object when you application is behind a reverse proxy.
+    # object when your application is behind a reverse proxy.
     #
     # Keep this SECURE_PROXY_SSL_HEADER configuration only if :
     # - your Django app is behind a proxy.
@@ -190,7 +190,7 @@ class Test(Base):
 
 class ContinuousIntegration(Test):
     """
-    Continous Integration environment settings
+    Continuous Integration environment settings
     nota bene: it should inherit from the Test environment.
     """
 

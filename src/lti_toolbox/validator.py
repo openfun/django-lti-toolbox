@@ -138,7 +138,7 @@ class LTIRequestValidator(RequestValidator):
         of the nonce and timestamp, which are associated with a client key and
         possibly a token. If invalid then immediately fail the request
         by returning False. If the nonce/timestamp pair has been used before and
-        you may just have detected a replay attack. Therefore it is an essential
+        you may just have detected a replay attack. Therefore, it is an essential
         part of OAuth security that you not allow nonce/timestamp reuse.
         Note that this validation check is done before checking the validity of
         the client and token.::

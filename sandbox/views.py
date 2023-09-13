@@ -60,7 +60,7 @@ class LaunchURLWithAuth(BaseLTIAuthView):
 
 
 ##################################################################################
-# You can ignore the rest of the file since its related to the demo LTI consumer #
+# You can ignore the rest of the file since it's related to the demo LTI consumer #
 ##################################################################################
 
 

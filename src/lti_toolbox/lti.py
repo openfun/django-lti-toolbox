@@ -116,7 +116,7 @@ class LTI:
         """Retrieve course info in the LTI request.
 
         Returns:
-            dict: A dictionnary containing course informations
+            dict: A dictionary containing course information
                 school_name: the school name
                 course_name: the course name
                 course_section: the course section
