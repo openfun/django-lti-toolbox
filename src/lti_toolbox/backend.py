@@ -62,7 +62,7 @@ class LTIBackend(ModelBackend):
 
     @staticmethod
     def _get_mandatory_param(lti_request: LTI, param: str) -> Any:
-        """Get an LTI parameter or throw a exception if not defined."
+        """Get an LTI parameter or throw an exception if not defined."
 
         Args:
             lti_request: The verified LTI request
