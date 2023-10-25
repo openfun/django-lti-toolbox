@@ -35,7 +35,6 @@ class LTIConsumer(models.Model):
     class Meta:
         """Options for the ``LTIConsumer`` model."""
 
-        db_table = "lti_consumer"
         verbose_name = _("LTI consumer")
         verbose_name_plural = _("LTI consumers")
 
@@ -89,7 +88,6 @@ class LTIPassport(models.Model):
     class Meta:
         """Options for the ``LTIPassport`` model."""
 
-        db_table = "lti_passport"
         verbose_name = _("LTI passport")
         verbose_name_plural = _("LTI passports")
 
