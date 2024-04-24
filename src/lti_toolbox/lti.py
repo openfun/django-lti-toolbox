@@ -2,6 +2,7 @@
 """
 import re
 from typing import Any, Optional, Set
+from urllib.parse import urljoin
 
 from oauthlib.oauth1 import SignatureOnlyEndpoint
 
@@ -135,9 +136,25 @@ class LTI:
 
         return {
             "school_name": self.get_param("tool_consumer_instance_name", None),
-            "course_name": self.get_param("context_title"),
+            "course_name": self.context_title,
             "course_run": None,
         }
+
+    @property
+    def origin_url(self):
+        """Try to recreate the URL that was used to launch the LTI request."""
+        base_url = self.request.META.get("HTTP_REFERER")
+        if not base_url:
+            return None
+        context_id = self.get_param("context_id")
+
+        url = None
+        if self.is_edx_format:
+            url = urljoin(base_url, f"/course/{context_id}")
+        elif self.is_moodle_format:
+            url = urljoin(base_url, f"/course/view.php?id={context_id}")
+
+        return url
 
     @property
     def resource_link_title(self) -> Optional[str]:
@@ -168,6 +185,18 @@ class LTI:
 
         """
         return re.search(r"^course-v[0-9]:.*$", self.get_param("context_id"))
+
+    @property
+    def is_moodle_format(self):
+        """Check if the LTI request comes from Moodle.
+
+        Returns
+        -------
+        boolean
+            True if the LTI request is sent by Moodle
+
+        """
+        return self.get_param("tool_consumer_info_product_family_code", "") == "moodle"
 
     def _has_any_of_roles(self, roles: Set[str]):
         """Check if the LTI user has any of the provided roles."""
