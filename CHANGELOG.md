@@ -8,6 +8,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Enhance the LTI class with `origin_url` and `is_moodle_format` properties
+
 ## [1.2.0] - 2023-09-13
 
 ### Added

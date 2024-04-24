@@ -31,7 +31,10 @@ class LTITestCase(TestCase):
 
     def _lti_request(self, signed_parameters, url):
         request = self.request_factory.post(
-            url, data=urlencode(signed_parameters), content_type=CONTENT_TYPE
+            url,
+            data=urlencode(signed_parameters),
+            content_type=CONTENT_TYPE,
+            HTTP_REFERER="http://testserver",
         )
         return LTI(request)
 
@@ -139,6 +142,23 @@ class LTITestCase(TestCase):
         lti_parameters.update({"context_id": "foo-context"})
         lti = self._verified_lti_request(lti_parameters)
         self.assertFalse(lti.is_edx_format)
+
+    def test_is_moodle_format(self):
+        """Test the detection of Moodle course format"""
+        lti_parameters = {
+            "lti_message_type": "basic-lti-launch-request",
+            "lti_version": "LTI-1p0",
+            "resource_link_id": "df7",
+            "context_id": "1542",
+            "roles": "Instructor",
+            "tool_consumer_info_product_family_code": "moodle",
+        }
+        lti = self._verified_lti_request(lti_parameters)
+        self.assertTrue(lti.is_moodle_format)
+
+        lti_parameters.update({"tool_consumer_info_product_family_code": ""})
+        lti = self._verified_lti_request(lti_parameters)
+        self.assertFalse(lti.is_moodle_format)
 
     def test_course_info(self):
         """Test the detection of course information"""
@@ -332,3 +352,33 @@ class LTITestCase(TestCase):
         lti_parameters.update({"context_title": "the context title"})
         lti = self._verified_lti_request(lti_parameters)
         self.assertEqual("the context title", lti.context_title)
+
+    def test_lti_origin_url_edx(self):
+        """Build origin_url for an edx request."""
+        lti_parameters = {
+            "lti_message_type": "basic-lti-launch-request",
+            "lti_version": "LTI-1p0",
+            "resource_link_id": "df7",
+            "context_id": "course-v1:fooschool+mathematics+0042",
+            "roles": "Instructor",
+        }
+        lti = self._verified_lti_request(lti_parameters)
+
+        self.assertEqual(
+            lti.origin_url,
+            "http://testserver/course/course-v1:fooschool+mathematics+0042",
+        )
+
+    def test_lti_origin_url_moodle(self):
+        """Build origin_url for an edx request."""
+        lti_parameters = {
+            "lti_message_type": "basic-lti-launch-request",
+            "lti_version": "LTI-1p0",
+            "resource_link_id": "df7",
+            "context_id": "123",
+            "roles": "Instructor",
+            "tool_consumer_info_product_family_code": "moodle",
+        }
+        lti = self._verified_lti_request(lti_parameters)
+
+        self.assertEqual(lti.origin_url, "http://testserver/course/view.php?id=123")
