@@ -8,6 +8,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.3.0] - 2024-04-25
+
 ### Added
 
 - Enhance the LTI class with `origin_url` and `is_moodle_format` properties
@@ -55,7 +57,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Import `lti_toolbox` library and tests from
   [Ashley](https://github.com/openfun/ashley)
 
-[Unreleased]: https://github.com/openfun/django-lti-toolbox/compare/v1.2.0...master
+[Unreleased]: https://github.com/openfun/django-lti-toolbox/compare/v1.3.0...master
+[1.3.0]: https://github.com/openfun/django-lti-toolbox/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/openfun/django-lti-toolbox/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/openfun/django-lti-toolbox/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/openfun/django-lti-toolbox/compare/v1.0.0...v1.0.1
