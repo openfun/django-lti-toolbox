@@ -8,7 +8,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Fixed
+## [2.0.0] - 2024-07-15
+
+### Changed
 
 - Compute `origin_url` from consumer URL instead of `HTTP_REFERER`
 
@@ -61,7 +63,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Import `lti_toolbox` library and tests from
   [Ashley](https://github.com/openfun/ashley)
 
-[Unreleased]: https://github.com/openfun/django-lti-toolbox/compare/v1.3.0...master
+[Unreleased]: https://github.com/openfun/django-lti-toolbox/compare/v2.0.0...master
+[2.0.0]: https://github.com/openfun/django-lti-toolbox/compare/v1.3.0...v2.0.0
 [1.3.0]: https://github.com/openfun/django-lti-toolbox/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/openfun/django-lti-toolbox/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/openfun/django-lti-toolbox/compare/v1.0.1...v1.1.0
