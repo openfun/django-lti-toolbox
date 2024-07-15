@@ -1,4 +1,5 @@
 """Test the LTI interconnection with an LTI consumer."""
+
 from urllib.parse import urlencode
 
 from django.test import RequestFactory, TestCase
@@ -34,7 +35,6 @@ class LTITestCase(TestCase):
             url,
             data=urlencode(signed_parameters),
             content_type=CONTENT_TYPE,
-            HTTP_REFERER="http://testserver",
         )
         return LTI(request)
 
@@ -366,7 +366,7 @@ class LTITestCase(TestCase):
 
         self.assertEqual(
             lti.origin_url,
-            "http://testserver/course/course-v1:fooschool+mathematics+0042",
+            "https://testserver/consumer-20/course/course-v1:fooschool+mathematics+0042",
         )
 
     def test_lti_origin_url_moodle(self):
@@ -381,4 +381,6 @@ class LTITestCase(TestCase):
         }
         lti = self._verified_lti_request(lti_parameters)
 
-        self.assertEqual(lti.origin_url, "http://testserver/course/view.php?id=123")
+        self.assertEqual(
+            lti.origin_url, "https://testserver/consumer-21/course/view.php?id=123"
+        )
