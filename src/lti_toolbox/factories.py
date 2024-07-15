@@ -1,4 +1,5 @@
 """Factories for the ``lti_toolbox``."""
+
 import factory
 from factory.django import DjangoModelFactory
 
@@ -14,7 +15,7 @@ class LTIConsumerFactory(DjangoModelFactory):
 
     slug = factory.Sequence(lambda n: f"consumer{n}")
     title = factory.Sequence(lambda n: f"Consumer {n}")
-    url = factory.Sequence(lambda n: f"https://www.example.com/consumer-{n}/")
+    url = factory.Sequence(lambda n: f"https://testserver/consumer-{n}")
 
 
 class LTIPassportFactory(DjangoModelFactory):

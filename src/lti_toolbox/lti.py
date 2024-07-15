@@ -1,5 +1,5 @@
-"""LTI module that supports LTI 1.0.
-"""
+"""LTI module that supports LTI 1.0."""
+
 import re
 from typing import Any, Optional, Set
 from urllib.parse import urljoin
@@ -143,16 +143,18 @@ class LTI:
     @property
     def origin_url(self):
         """Try to recreate the URL that was used to launch the LTI request."""
-        base_url = self.request.META.get("HTTP_REFERER")
+        base_url = self.get_consumer().url
         if not base_url:
             return None
+        if not base_url.endswith("/"):
+            base_url = f"{base_url}/"
         context_id = self.get_param("context_id")
 
         url = None
         if self.is_edx_format:
-            url = urljoin(base_url, f"/course/{context_id}")
+            url = urljoin(base_url, f"course/{context_id}")
         elif self.is_moodle_format:
-            url = urljoin(base_url, f"/course/view.php?id={context_id}")
+            url = urljoin(base_url, f"course/view.php?id={context_id}")
 
         return url
 
