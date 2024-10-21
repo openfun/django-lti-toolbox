@@ -130,7 +130,7 @@ jobs:
           DB_PASSWORD: pass
           DB_PORT: 5432
       # services
-      - image: circleci/postgres:12-ram
+      - image: circleci/postgres:13-ram
         environment:
           POSTGRES_DB: lti_toolbox
           POSTGRES_USER: fun
